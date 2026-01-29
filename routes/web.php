@@ -9,6 +9,13 @@ Route::get('/', function () {
 Route::get('/dashboard/test', function () {
     return view('user.test');
 });
+Route::get('/dashboard/edit-data', function () {
+    return view('user.user-data');
+})->name('edit-user-data');
+
+Route::get('/worker-dashboard', function () {
+    return view('user.worker');
+})->name('view.worker');
 
 Route::get('/dashboard', function () {
     return view('user.dashboard');

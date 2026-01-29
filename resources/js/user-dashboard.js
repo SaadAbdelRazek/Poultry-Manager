@@ -66,3 +66,175 @@ document.querySelectorAll(".action-card").forEach((card) => {
         alert(`سيتم فتح نموذج: ${title}`);
     });
 });
+
+//-------------------
+
+// DOM Elements
+const uploadTrigger = document.getElementById("uploadTrigger");
+const avatarUpload = document.getElementById("avatarUpload");
+const uploadModal = document.getElementById("uploadModal");
+const closeUploadModal = document.getElementById("closeUploadModal");
+const dropZone = document.getElementById("dropZone");
+const saveBtn = document.getElementById("saveBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const successToast = document.getElementById("successToast");
+const errorToast = document.getElementById("errorToast");
+const profileForm = document.getElementById("profileForm");
+
+// Avatar Upload Functionality
+uploadTrigger.addEventListener("click", () => {
+    uploadModal.classList.remove("hidden");
+});
+
+closeUploadModal.addEventListener("click", () => {
+    uploadModal.classList.add("hidden");
+});
+
+dropZone.addEventListener("click", () => {
+    avatarUpload.click();
+});
+
+// Close modal when clicking outside
+uploadModal.addEventListener("click", (e) => {
+    if (e.target === uploadModal) {
+        uploadModal.classList.add("hidden");
+    }
+});
+
+// File upload preview
+avatarUpload.addEventListener("change", function (e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Update the avatar image
+            document.querySelector(".avatar-container img").src =
+                e.target.result;
+
+            // Show success message
+            showToast("تم تحديث الصورة بنجاح!", "success");
+
+            // Close modal
+            uploadModal.classList.add("hidden");
+        };
+
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+
+// Form Validation and Submission
+saveBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Get form values
+    const fullName = document.getElementById("fullName").value.trim();
+    const phoneNumber = document.getElementById("phoneNumber").value.trim();
+    const farmName = document.getElementById("farmName").value.trim();
+
+    // Simple validation
+    if (!fullName || fullName.length < 3) {
+        showToast("يرجى إدخال اسم صحيح (3 أحرف على الأقل)", "error");
+        document.getElementById("fullName").focus();
+        return;
+    }
+
+    if (!phoneNumber || phoneNumber.length < 10) {
+        showToast("يرجى إدخال رقم هاتف صحيح", "error");
+        document.getElementById("phoneNumber").focus();
+        return;
+    }
+
+    if (!farmName) {
+        showToast("يرجى إدخال اسم المزرعة", "error");
+        document.getElementById("farmName").focus();
+        return;
+    }
+
+    // Simulate API call with loading state
+    saveBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الحفظ...';
+    saveBtn.disabled = true;
+
+    setTimeout(() => {
+        // Show success message
+        showToast("تم تحديث البيانات الشخصية بنجاح", "success");
+
+        // Reset button state
+        saveBtn.innerHTML = '<i class="fas fa-save ml-2"></i> حفظ التعديلات';
+        saveBtn.disabled = false;
+
+        // In a real app, you would submit the form here
+        // profileForm.submit();
+    }, 1500);
+});
+
+// Cancel button functionality
+cancelBtn.addEventListener("click", () => {
+    // Show confirmation before discarding changes
+    if (
+        confirm(
+            "هل أنت متأكد من إلغاء التعديلات؟ سيتم فقدان جميع التغييرات غير المحفوظة.",
+        )
+    ) {
+        // Reset form to original values
+        profileForm.reset();
+        showToast("تم إلغاء التعديلات", "error");
+    }
+});
+
+// Toast notification function
+function showToast(message, type = "success") {
+    if (type === "success") {
+        successToast.querySelector("p.font-bold").textContent = message;
+        successToast.classList.remove("hidden");
+        successToast.classList.remove("translate-y-10");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+            successToast.classList.add("translate-y-10");
+            setTimeout(() => {
+                successToast.classList.add("hidden");
+            }, 300);
+        }, 3000);
+    } else {
+        errorToast.querySelector("p.font-bold").textContent = message;
+        errorToast.classList.remove("hidden");
+        errorToast.classList.remove("translate-y-10");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+            errorToast.classList.add("translate-y-10");
+            setTimeout(() => {
+                errorToast.classList.add("hidden");
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Input field focus effects
+const inputs = document.querySelectorAll("input, select");
+inputs.forEach((input) => {
+    input.addEventListener("focus", function () {
+        this.parentElement.classList.add("ring-1", "ring-emerald-500");
+    });
+
+    input.addEventListener("blur", function () {
+        this.parentElement.classList.remove("ring-1", "ring-emerald-500");
+    });
+});
+
+// Initialize with form validation check
+document.addEventListener("DOMContentLoaded", () => {
+    // Check initial form validity
+    const fullName = document.getElementById("fullName").value.trim();
+    const phoneNumber = document.getElementById("phoneNumber").value.trim();
+    const farmName = document.getElementById("farmName").value.trim();
+
+    if (fullName && phoneNumber && farmName) {
+        saveBtn.disabled = false;
+    }
+});
+
+//---------------------------
+
+
